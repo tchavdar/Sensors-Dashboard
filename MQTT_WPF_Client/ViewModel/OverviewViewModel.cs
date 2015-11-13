@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MQTT_WPF_Client.Annotations;
-using MQTT_WPF_Client.Model;
+
 using Syncfusion.UI.Xaml.Charts;
 
 
@@ -113,54 +113,7 @@ namespace MQTT_WPF_Client.ViewModel
 
 
 
-            //using (var ctx = new MyEntityContext(App.ConnectionString))
-            //{
-            //    var newMS = ctx.MultiSensors.Create();
-
-            //    ctx.MultiSensors.Add(As1.ToIMultiSensor());
-            //    ctx.MultiSensors.Add(As2.ToIMultiSensor());
-            //    ctx.MultiSensors.Add(As3.ToIMultiSensor());
-
-            //    foreach (var sensor in As1.Sensors)
-            //    {
-            //        ctx.Sensors.Add(sensor.Value.ToISensor());
-            //    }
-
-            //    ctx.SaveChanges();    
-            //}
-
-
-
-
-
-            //using (var ctx = new MyEntityContext(App.ConnectionString))
-            //{
-            //    var As10Db = ctx.MultiSensors.First(x => x.PublicName == "Outside");
-
-
-            //    var sensors = ctx.Sensors.Where(x => x.ParentMultiSensor.Id == As10Db.Id);
-            //    foreach (var sensor in sensors)
-            //    {
-            //        As10Db.Sensors.Add(sensor);
-            //    }
-                
-            //    var As10 = AggregatedSensors.CreateFromIMultiSensor(As10Db);
-
-
-            //}
-
-            //using (var ctx = new MyEntityContext(App.ConnectionString))
-            //{
-            //    var sensors = ctx.MultiSensors;
-            //    foreach (var multiSensor in sensors)
-            //    {
-            //        ctx.DeleteObject(multiSensor);
-            //    }
-            //    ctx.SaveChanges();
-            //}
-
-
-
+ 
         }
 
         private void MqttDL_OnConnected(object sender, MqttConnectedArgs args)
