@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,7 +17,8 @@ namespace MQTT_WPF_Client.Data
     {
         public DateTime ReceivedDt { get; set; }
         public string Value { get; set; }
-
+        public int Id { get; set; }
+        
         public SensorData(DateTime receivedDt, string value)
         {
             ReceivedDt = receivedDt;
@@ -25,6 +28,7 @@ namespace MQTT_WPF_Client.Data
 
     public class Sensor:INotifyPropertyChanged
     {
+        public int Id { get; set; }
         private string _lastValue;
         private DateTime _lastUpdated;
         public string Type { get; set; }
@@ -85,6 +89,7 @@ namespace MQTT_WPF_Client.Data
             if (LastValue!=newData.Value.ToString(CultureInfo.InvariantCulture)||((LastUpdated-newData.ReceivedDt).Minutes>15)||(SensorDatas.Count<15))
             {
                 SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
+                Debug.WriteLine($"Sensor:{Type}:{Unit} received:{newData.Value.ToString()}");
                 OnPropertyChanged(nameof(SensorDatas));
             }
 
@@ -105,11 +110,13 @@ namespace MQTT_WPF_Client.Data
 
     public class AggregatedSensors
     {
+        public int Id { get; set; }
         public string Location { get; set; }
 
         public string PublicName { get; set; }
 
         public SortedList<String,Sensor> Sensors { get; set; }
+
 
         public AggregatedSensors(string location, string publicName)
         {
@@ -132,8 +139,5 @@ namespace MQTT_WPF_Client.Data
         {
             Sensors.Add(sensorType,new Sensor(sensorType,sensorUnit));
         }
-
-
-      
     }
 }

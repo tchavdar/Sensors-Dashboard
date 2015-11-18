@@ -42,7 +42,7 @@ namespace MQTT_WPF_Client.MQTT
                     MqttDataFormat newData = new MqttDataFormat(e.Topic, Encoding.UTF8.GetString(e.Message));
                     if (newData.ParsableMessage)
                     {
-                        this.Add(newData);
+                        //this.Add(newData);
                         onDataReceived(new MQQTDataReceivedEventArgs(newData));
                     }
                 }));
@@ -65,7 +65,7 @@ namespace MQTT_WPF_Client.MQTT
                     MqttDataFormat newData = new MqttDataFormat(Topic, $"{Value} id:0000 SID:FAKE_1");
                     if (newData.ParsableMessage)
                     {
-                        this.Add(newData);
+                       // this.Add(newData);
                         onDataReceived(new MQQTDataReceivedEventArgs(newData));
                     }
                 }));

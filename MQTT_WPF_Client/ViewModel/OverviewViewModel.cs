@@ -20,7 +20,20 @@ namespace MQTT_WPF_Client.ViewModel
         public MQTTCollection MqttReceivedData { get; set; }
 
 
-     
+
+
+        public AggregatedSensors As4
+        {
+            get { return (AggregatedSensors)GetValue(As4Property); }
+            set { SetValue(As4Property, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for As4.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty As4Property =
+            DependencyProperty.Register("As4", typeof(AggregatedSensors), typeof(Window), new PropertyMetadata(null));
+
+
+
         public AggregatedSensors As1
         {
             get { return (AggregatedSensors)GetValue(As1Property); }
@@ -95,6 +108,7 @@ namespace MQTT_WPF_Client.ViewModel
             As1 = new AggregatedSensors("cabinet", "Cabinet");
             As1.AddSensor("temperature", "C");
             As1.AddSensor("humidity", "%");
+
             As2 = new AggregatedSensors("cave", "Cave");
             As2.AddSensor("temperature", "C");
             As2.AddSensor("humidity", "%");
@@ -102,14 +116,20 @@ namespace MQTT_WPF_Client.ViewModel
             As3 = new AggregatedSensors("outside", "Outside");
             As3.AddSensor("temperature", "C");
             As3.AddSensor("humidity", "%");
+
+            As4 = new AggregatedSensors("sleeping_room", "Sleeping room");
+            As4.AddSensor("temperature", "C");
+            As4.AddSensor("humidity", "%");
+
             //note that the sensors listen to the collection events not the data layer events
             //the collection takes care to parse the received data so that the agregated sensors can use it directly
             MqttReceivedData.DataReceived += As1.MqttReceivedData;
             MqttReceivedData.DataReceived += As2.MqttReceivedData;
             MqttReceivedData.DataReceived += As3.MqttReceivedData;
+            MqttReceivedData.DataReceived += As4.MqttReceivedData;
 
 
-            Settings= new SettingsCommand(this);
+            Settings = new SettingsCommand(this);
 
 
 

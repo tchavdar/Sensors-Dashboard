@@ -166,6 +166,24 @@
                                 </StackPanel>
                             </StackPanel>
 
+                            <StackPanel Orientation="Vertical">
+                                <Label HorizontalAlignment="Left"
+                                       Margin="5" FontSize="12" Content="{Binding As4.PublicName}" />
+                                <!--temperature-->
+                                <StackPanel Orientation="Horizontal">
+                                    <Label HorizontalAlignment="Right"
+                                           FontSize="23" Content="{Binding As4.Sensors[temperature].LastValue}" />
+                                    <Label HorizontalAlignment="Left"
+                                           FontSize="12" Content="{Binding As4.Sensors[temperature].Unit}" />
+                                </StackPanel>
+                                <!--humidity-->
+                                <StackPanel Orientation="Horizontal">
+                                    <Label HorizontalAlignment="Right"
+                                           FontSize="23" Content="{Binding As4.Sensors[humidity].LastValue}" />
+                                    <Label HorizontalAlignment="Left"
+                                           FontSize="12" Content="{Binding As4.Sensors[humidity].Unit}" />
+                                </StackPanel>
+                            </StackPanel>
                             <!--<StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12">
@@ -199,117 +217,158 @@
                                 </ObjectDataProvider.MethodParameters>
                             </ObjectDataProvider>
                         </StackPanel.Resources>
-                        <StackPanel Orientation="Horizontal" >
+                        <StackPanel Orientation="Horizontal">
                             <Label>Time Interval</Label>
-                            <ComboBox x:Name="IntervalTypeCombo" 
-                                  ItemsSource="{Binding Source={StaticResource IntervalTypeEnum}}"
-                                  SelectedItem="{Binding ChartIntervalType}"/>
+                            <ComboBox x:Name="IntervalTypeCombo"
+                                      ItemsSource="{Binding Source={StaticResource IntervalTypeEnum}}"
+                                      SelectedItem="{Binding ChartIntervalType}" />
                         </StackPanel>
-                        <syncfusion:SfChart Header="Data" 
-                                            HorizontalAlignment="Center" 
-                                            Margin="10"
-                                            VerticalAlignment="Center">
-
-                            <syncfusion:SfChart.RowDefinitions>
-
-                                <syncfusion:ChartRowDefinition/>
-
-                                <syncfusion:ChartRowDefinition/>
-
-                            </syncfusion:SfChart.RowDefinitions>
-
-                            <syncfusion:SfChart.Legend>
-                                <syncfusion:ChartLegend DockPosition="Right" 
-                                                        CheckBoxVisibility="Visible"
-                                                        LegendPosition="Outside"
-                                                        Orientation="Vertical"/>
-                            </syncfusion:SfChart.Legend>
-                            <syncfusion:SfChart.PrimaryAxis>
-                                <syncfusion:DateTimeAxis FontSize="10" 
-                                                          Header="Time" 
-                                                          LabelRotationAngle="0"
-                                                          ShowGridLines="False" 
-                                                         IntervalType="{Binding SelectedItem, ElementName=IntervalTypeCombo}"
-                                                         LabelFormat="HH:mm"/>
-                            </syncfusion:SfChart.PrimaryAxis>
-                            <syncfusion:SfChart.SecondaryAxis>
-                                <syncfusion:NumericalAxis syncfusion:ChartBase.Row="0"
-                                                          FontSize="10"
-                                                          Header="Temperature"
-                                                          LabelRotationAngle="0"
-                                                          OpposedPosition="False"
-                                                          />
-
-                            </syncfusion:SfChart.SecondaryAxis>
+                        <Expander Header="Charts" IsExpanded="True">
+                            <syncfusion:SfChart Header="Data"
+                                                HorizontalAlignment="Center"
+                                                Margin="10"
+                                                VerticalAlignment="Center">
 
 
-                            <syncfusion:SplineSeries Label="{Binding As1.PublicName}" 
-                        		ItemsSource="{Binding As1.Sensors[temperature].SensorDatas}"
-                        		XBindingPath="ReceivedDt"
-                        		YBindingPath="Value"/>
-                            <syncfusion:SplineSeries Label="{Binding As2.PublicName}"
-                        		ItemsSource="{Binding As2.Sensors[temperature].SensorDatas}"
-                        		XBindingPath="ReceivedDt"
-                        		YBindingPath="Value" />
-                            <syncfusion:SplineSeries Label="{Binding As3.PublicName}"
-                        		ItemsSource="{Binding As3.Sensors[temperature].SensorDatas}"
-                        		XBindingPath="ReceivedDt"
-                        		YBindingPath="Value" />
-                            
-                            
-                            <syncfusion:SplineSeries Label="{Binding As3.PublicName}"
-                        		ItemsSource="{Binding As3.Sensors[humidity].SensorDatas}"
-                        		XBindingPath="ReceivedDt"
-                        		YBindingPath="Value" >
+                                <syncfusion:SfChart.Behaviors>
+                                    <syncfusion:ChartTrackBallBehavior>
 
-                                <syncfusion:SplineSeries.YAxis>
+                                    </syncfusion:ChartTrackBallBehavior>
+                                </syncfusion:SfChart.Behaviors>
+                                <syncfusion:SfChart.RowDefinitions>
 
-                                    <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
-                                                              Header="Humidity"
-                                                              PlotOffset="10"
+                                    <syncfusion:ChartRowDefinition />
+
+                                    <syncfusion:ChartRowDefinition />
+
+                                </syncfusion:SfChart.RowDefinitions>
+
+                                <syncfusion:SfChart.Legend>
+                                    <syncfusion:ChartLegend DockPosition="Right"
+                                                            CheckBoxVisibility="Visible"
+                                                            LegendPosition="Outside"
+                                                            Orientation="Vertical" />
+                                </syncfusion:SfChart.Legend>
+                                <syncfusion:SfChart.PrimaryAxis>
+                                    <syncfusion:DateTimeAxis FontSize="10"
+                                                             Header="Time"
+                                                             LabelRotationAngle="0"
+                                                             ShowGridLines="False"
+                                                             IntervalType="{Binding SelectedItem, ElementName=IntervalTypeCombo}"
+                                                             LabelFormat="HH:mm" />
+                                </syncfusion:SfChart.PrimaryAxis>
+                                <syncfusion:SfChart.SecondaryAxis>
+                                    <syncfusion:NumericalAxis syncfusion:ChartBase.Row="0"
                                                               FontSize="10"
+                                                              Header="Temperature"
+                                                              LabelRotationAngle="0"
                                                               OpposedPosition="False" />
 
-                                </syncfusion:SplineSeries.YAxis>
-                            </syncfusion:SplineSeries>
-                            <syncfusion:SplineSeries Label="{Binding As1.PublicName}"
-                                                     ItemsSource="{Binding As1.Sensors[humidity].SensorDatas}"
-                                                     XBindingPath="ReceivedDt"
-                                                     YBindingPath="Value">
-
-                                <syncfusion:SplineSeries.YAxis>
-
-                                    <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
-                                                              Header="Humidity"
-                                                              PlotOffset="0"
-                                                              FontSize="10"
-                                                              Visibility="Collapsed"
-                                                              OpposedPosition="True"
-                                                              LabelsPosition="Inside" />
-                                </syncfusion:SplineSeries.YAxis>
-                            </syncfusion:SplineSeries>
-                            <syncfusion:SplineSeries Label="{Binding As2.PublicName}"
-                                                     ItemsSource="{Binding As2.Sensors[humidity].SensorDatas}"
-                                                     XBindingPath="ReceivedDt"
-                                                     YBindingPath="Value">
-
-                                <syncfusion:SplineSeries.YAxis>
-
-                                    <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
-                                                              Header="Humidity"
-                                                              PlotOffset="0"
-                                                              FontSize="10"
-                                                              Visibility="Collapsed"
-                                                              OpposedPosition="True"
-                                                              LabelsPosition="Inside" 
-                                                              />
-
-                                </syncfusion:SplineSeries.YAxis>
-                            </syncfusion:SplineSeries>
+                                </syncfusion:SfChart.SecondaryAxis>
 
 
-                        </syncfusion:SfChart>
+                                <syncfusion:LineSeries Label="{Binding As1.PublicName}"
+                                                       ItemsSource="{Binding As1.Sensors[temperature].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value" />
+                                <syncfusion:LineSeries Label="{Binding As2.PublicName}"
+                                                       ItemsSource="{Binding As2.Sensors[temperature].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value" />
+                                <syncfusion:LineSeries Label="{Binding As3.PublicName}"
+                                                       ItemsSource="{Binding As3.Sensors[temperature].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value" />
+                                <syncfusion:LineSeries Label="{Binding As4.PublicName}"
+                                                       ItemsSource="{Binding As4.Sensors[temperature].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value" />
 
+
+                                <syncfusion:LineSeries Label="{Binding As3.PublicName}"
+                                                       ItemsSource="{Binding As3.Sensors[humidity].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value">
+
+                                    <syncfusion:LineSeries.YAxis>
+
+                                        <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
+                                                                  Header="Humidity"
+                                                                  PlotOffset="10"
+                                                                  FontSize="10"
+                                                                  OpposedPosition="False"
+                                                                  Minimum="10"
+                                                                  Maximum="100" />
+
+                                    </syncfusion:LineSeries.YAxis>
+                                </syncfusion:LineSeries>
+                                <syncfusion:LineSeries Label="{Binding As1.PublicName}"
+                                                       ItemsSource="{Binding As1.Sensors[humidity].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value">
+
+                                    <syncfusion:LineSeries.YAxis>
+
+                                        <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
+                                                                  Header="Humidity"
+                                                                  PlotOffset="0"
+                                                                  FontSize="10"
+                                                                  Visibility="Collapsed"
+                                                                  OpposedPosition="True"
+                                                                  LabelsPosition="Inside"
+                                                                  Minimum="10"
+                                                                  Maximum="100" />
+                                    </syncfusion:LineSeries.YAxis>
+
+
+                                </syncfusion:LineSeries>
+                                
+                                <syncfusion:LineSeries Label="{Binding As2.PublicName}"
+                                                       ItemsSource="{Binding As2.Sensors[humidity].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value">
+
+                                    <syncfusion:LineSeries.YAxis>
+
+                                        <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
+                                                                  Header="Humidity"
+                                                                  PlotOffset="0"
+                                                                  FontSize="10"
+                                                                  Visibility="Collapsed"
+                                                                  OpposedPosition="True"
+                                                                  LabelsPosition="Inside"
+                                                                  Minimum="10"
+                                                                  Maximum="100" />
+
+                                    </syncfusion:LineSeries.YAxis>
+
+
+                                </syncfusion:LineSeries>
+                                <syncfusion:LineSeries Label="{Binding As4.PublicName}"
+                                                       ItemsSource="{Binding As4.Sensors[humidity].SensorDatas}"
+                                                       XBindingPath="ReceivedDt"
+                                                       YBindingPath="Value">
+
+                                    <syncfusion:LineSeries.YAxis>
+
+                                        <syncfusion:NumericalAxis syncfusion:ChartBase.Row="1"
+                                                                  Header="Humidity"
+                                                                  PlotOffset="0"
+                                                                  FontSize="10"
+                                                                  Visibility="Collapsed"
+                                                                  OpposedPosition="True"
+                                                                  LabelsPosition="Inside"
+                                                                  Minimum="10"
+                                                                  Maximum="100" />
+
+                                    </syncfusion:LineSeries.YAxis>
+
+
+                                </syncfusion:LineSeries>
+
+
+                            </syncfusion:SfChart>
+                        </Expander>
                     </StackPanel>
 
                     <StatusBar Grid.Row="3">
@@ -349,7 +408,7 @@
                     </Expander>
                     <Expander Header="Sensor Data" IsExpanded="True">
                         <DataGrid
-                            ItemsSource="{Binding As1.Sensors[temperature].SensorDatas}"
+                            ItemsSource="{Binding As.Sensors[temperature].SensorDatas}"
                             IsReadOnly="True"
                             AutoGenerateColumns="False">
 
