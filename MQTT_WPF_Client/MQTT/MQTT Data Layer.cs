@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Data.Entity;
+using MQTT_client.Data;
 using Polly;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
@@ -103,6 +107,7 @@ namespace MQTT_WPF_Client.MQTT
         void client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             Console.WriteLine(@"Received = " + Encoding.UTF8.GetString(e.Message) + @" on topic " + e.Topic);
+            OnDataLayerPublishReceived(e);
         }
 
         void client_MqttMsgSubscribed(object sender, MqttMsgSubscribedEventArgs e)
@@ -128,13 +133,48 @@ namespace MQTT_WPF_Client.MQTT
         {
             ClientId = clientId;
             Broker = broker;
+            FakeDataTimer = new System.Timers.Timer(1500) {Enabled = false};
+            FakeDataTimer.Elapsed += FakeDataTimer_Elapsed;
+        }
+
+        private void FakeDataTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            SendFakeData();
         }
 
         public event MqttConnected OnConnected;
 
-        
+
+        public event MqttClient.MqttMsgPublishEventHandler DataLayerPublishReceived;
+
+        protected virtual void OnDataLayerPublishReceived(MqttMsgPublishEventArgs e)
+        {
+            DataLayerPublishReceived?.Invoke(this, e);
+        }
+
+        public System.Timers.Timer FakeDataTimer { get; set; }
+
+        public void SendFakeData()
+        {
+            OnDataLayerPublishReceived(new MqttMsgPublishEventArgs("myhome/test/cave/humidity", Encoding.GetEncoding("UTF-8").GetBytes("56 id:000 SID:FAKE_1"),false,1,false));
+        }
+
+        public void GetDataFromDB()
+        {
+            using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db "))
+            {
+                Task query = db.Messages.Where(x => x.ProcessedDateTime.Year<2000).ForEachAsync(x=> OnDataLayerPublishReceived(new MqttMsgPublishEventArgs(x.Topic,
+                        Encoding.GetEncoding("UTF-8").GetBytes(x.Message), false, 1, false)));
+               
+            }
+        }
+
+        public RawMQTTDataModel DLDbContext { get; set; }
 
     }
+
+
+
 
     public delegate void MqttConnected(object sender, MqttConnectedArgs args);
 

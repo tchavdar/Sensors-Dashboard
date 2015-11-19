@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
+using MQTT_client.Data;
 using MQTT_WPF_Client.Annotations;
 
 using Syncfusion.UI.Xaml.Charts;
@@ -130,10 +131,12 @@ namespace MQTT_WPF_Client.ViewModel
 
 
             Settings = new SettingsCommand(this);
-
-
-
- 
+            using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db"))
+            {
+                db.Database.EnsureCreated();
+               // db.Database.Migrate();
+            }
+            MqttDl.GetDataFromDB();
         }
 
         private void MqttDL_OnConnected(object sender, MqttConnectedArgs args)
@@ -144,7 +147,8 @@ namespace MQTT_WPF_Client.ViewModel
                 //subscribe the collection of received data to the receive data event
                 //every PublishReceived event will be routed to the collection
                 //everything received by the data layer will be processed by the collection
-                MqttDl.Client.MqttMsgPublishReceived += MqttReceivedData.MqttMsgPublishReceived;
+                //MqttDl.Client.MqttMsgPublishReceived += MqttReceivedData.MqttMsgPublishReceived;
+                MqttDl.DataLayerPublishReceived += MqttReceivedData.MqttMsgPublishReceived;
             }
         }
 

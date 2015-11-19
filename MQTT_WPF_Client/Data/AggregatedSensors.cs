@@ -28,6 +28,7 @@ namespace MQTT_WPF_Client.Data
 
     public class Sensor:INotifyPropertyChanged
     {
+        private int _maxElementss;
         public int Id { get; set; }
         private string _lastValue;
         private DateTime _lastUpdated;
@@ -64,6 +65,7 @@ namespace MQTT_WPF_Client.Data
             Unit = sensorUnit;
             LastValue = "N/A";
             SensorDatas = new ObservableCollection<SensorData>();
+            _maxElementss = 100;
         }
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
@@ -86,12 +88,24 @@ namespace MQTT_WPF_Client.Data
 
         private void NewDataReceived(MqttDataFormat newData)
         {
-            if (LastValue!=newData.Value.ToString(CultureInfo.InvariantCulture)||((LastUpdated-newData.ReceivedDt).Minutes>15)||(SensorDatas.Count<15))
+
+            if (SensorDatas.Count > _maxElementss)
             {
-                SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
-                Debug.WriteLine($"Sensor:{Type}:{Unit} received:{newData.Value.ToString()}");
-                OnPropertyChanged(nameof(SensorDatas));
+                SensorDatas.RemoveAt(0);
             }
+            SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
+            OnPropertyChanged(nameof(SensorDatas));
+
+            //if (LastValue!=newData.Value.ToString(CultureInfo.InvariantCulture)||((LastUpdated-newData.ReceivedDt).Minutes>15)||(SensorDatas.Count<15))
+            //{
+            //    if (SensorDatas.Count>_maxElementss)
+            //    {
+            //        SensorDatas.RemoveAt(0);
+            //    }
+            //    SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
+            //    Debug.WriteLine($"Sensor:{Type}:{Unit} received:{newData.Value.ToString(CultureInfo.InvariantCulture)}");
+            //    OnPropertyChanged(nameof(SensorDatas));
+            //}
 
         }
 

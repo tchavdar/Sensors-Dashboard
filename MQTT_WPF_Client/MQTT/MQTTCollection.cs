@@ -26,6 +26,7 @@ namespace MQTT_WPF_Client.MQTT
 
         private OverviewViewModel _vm;
 
+        private int _maxElements;
 
 
 
@@ -42,15 +43,25 @@ namespace MQTT_WPF_Client.MQTT
                     MqttDataFormat newData = new MqttDataFormat(e.Topic, Encoding.UTF8.GetString(e.Message));
                     if (newData.ParsableMessage)
                     {
-                        //this.Add(newData);
+                        LimitedAdd(newData);
                         onDataReceived(new MQQTDataReceivedEventArgs(newData));
                     }
                 }));
         }
 
+        public void LimitedAdd(MqttDataFormat newData)
+        {
+            if (this.Count>_maxElements)
+            {
+                this.RemoveAt(0);
+            }
+            base.Add(newData);
+        }
+
         public MQTTCollection(OverviewViewModel viewModel)
         {
             _vm = viewModel;
+            _maxElements = 100;
             this.Timer = new Timer(1000);
             Timer.Enabled = false;
             Timer.Elapsed += TimerElapsed;
@@ -69,7 +80,6 @@ namespace MQTT_WPF_Client.MQTT
                         onDataReceived(new MQQTDataReceivedEventArgs(newData));
                     }
                 }));
-
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)

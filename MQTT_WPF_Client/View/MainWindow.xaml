@@ -6,13 +6,15 @@
     xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:syncfusion="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
-    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:viewModel="clr-namespace:MQTT_WPF_Client.ViewModel"
     x:Class="MQTT_WPF_Client.MainWindow"
     mc:Ignorable="d"
     Title="MainWindow" Height="649" Width="541" Closed="Window_Closed"
     TitleCaps="False"
     ResizeMode="CanResizeWithGrip"
     GlowBrush="{DynamicResource AccentColorBrush}"
+    d:DataContext="{d:DesignInstance viewModel:OverviewViewModel}"
     RightWindowCommandsOverlayBehavior="Never">
     <controls:MetroWindow.Resources>
         <CollectionViewSource x:Key="MqqtSortedCollection" Source="{Binding MqttReceivedData}">
@@ -211,7 +213,7 @@
                     <StackPanel Grid.Row="2">
                         <StackPanel.Resources>
                             <ObjectDataProvider x:Key="IntervalTypeEnum" MethodName="GetValues"
-                                                ObjectType="{x:Type System:Enum}">
+                                                ObjectType="{x:Type system:Enum}">
                                 <ObjectDataProvider.MethodParameters>
                                     <x:Type TypeName="syncfusion:DateTimeIntervalType" />
                                 </ObjectDataProvider.MethodParameters>
@@ -377,7 +379,7 @@
                         <StatusBarItem Content="Status Message" />
                         <Separator Style="{StaticResource MetroStatusBarSeparator}" />
 
-                        <controls:ToggleSwitch IsChecked="{Binding MqttReceivedData.Timer.Enabled}"
+                        <controls:ToggleSwitch IsChecked="{Binding MqttDl.FakeDataTimer.Enabled}"
                                                OnLabel="Connected"
                                                OffLabel="Disconnected" />
                     </StatusBar>
@@ -408,7 +410,7 @@
                     </Expander>
                     <Expander Header="Sensor Data" IsExpanded="True">
                         <DataGrid
-                            ItemsSource="{Binding As.Sensors[temperature].SensorDatas}"
+                            ItemsSource="{Binding As1.Sensors[temperature].SensorDatas}"
                             IsReadOnly="True"
                             AutoGenerateColumns="False">
 

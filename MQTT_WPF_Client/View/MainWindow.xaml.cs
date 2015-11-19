@@ -12,13 +12,7 @@ namespace MQTT_WPF_Client
     public partial class MainWindow: MetroWindow
     {
 
-
-        
-
         public OverviewViewModel ViewModel { get; set; }
-
-
-
 
         public MainWindow()
         {
@@ -26,8 +20,6 @@ namespace MQTT_WPF_Client
             
             ViewModel=new OverviewViewModel(this.Dispatcher);
             DataContext = ViewModel;
-
-
         }
 
         private void Window_Closed(object sender, EventArgs e)
