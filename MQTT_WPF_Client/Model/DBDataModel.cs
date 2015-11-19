@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.Data.Entity;
 using MQTT_WPF_Client.Data;
 
 namespace MQTT_WPF_Client.Model
