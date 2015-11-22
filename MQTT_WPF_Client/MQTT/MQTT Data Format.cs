@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Humanizer;
 using MQTT_WPF_Client.Annotations;
@@ -39,6 +41,7 @@ namespace MQTT_WPF_Client.MQTT
             set { _sensorId = value; }
         }
 
+        public int Voltage { get; set; }
         public string ReceivedDtHumanized => ReceivedDt.Humanize(false);
 
      /// <summary>
@@ -76,9 +79,31 @@ namespace MQTT_WPF_Client.MQTT
             try
             {
                 string[] data=rawData.Split(' ');
-                Value = Convert.ToDecimal(data[0]);
-                SeqId = Convert.ToInt32(data[1].Substring(3));
-                SensorId = data[2].Substring(4);
+                //Value = Convert.ToDecimal(data[0]);
+                //SeqId = Convert.ToInt32(data[1].Substring(3));
+                //SensorId = data[2].Substring(4);
+                Dictionary<string, string> dict = new Dictionary<string, string>();
+                foreach (var s in data)
+                {
+                    string[] pair = s.Split(':');
+                    if (pair.Length > 1)
+                    {
+                        dict.Add(pair[0], pair[1]);
+                    }
+                    else
+                    {
+                        dict.Add("v",pair[0]);
+                    }
+                }
+                Value = Convert.ToDecimal(dict["v"]);
+                SeqId = Convert.ToInt32(dict["id"]);
+                SensorId = dict["SID"];
+                if (dict.ContainsKey("SV"))
+                {
+                    Voltage = Convert.ToInt32(dict["SV"]);
+                }
+                
+
             }
             catch (Exception)
             {

@@ -18,23 +18,42 @@ namespace MQTT_WPF_Client.Data
         public DateTime ReceivedDt { get; set; }
         public string Value { get; set; }
         public int Id { get; set; }
+
+        public int Voltage { get; set; }
+
         
-        public SensorData(DateTime receivedDt, string value)
+        public SensorData(DateTime receivedDt, string value, int voltage)
         {
             ReceivedDt = receivedDt;
             Value = value;
+            Voltage = voltage;
         }
+
     }
+
+    public class UpdateSensorPeriod
+    {
+        public string SomeText { get; set; }
+        public int PercentToUpdate { get; set; }
+    }
+
+
+
+
 
     public class Sensor:INotifyPropertyChanged
     {
-        private int _maxElementss;
+        private int _maxElements;
         public int Id { get; set; }
         private string _lastValue;
         private DateTime _lastUpdated;
+        private TimeSpan _updatePeriod;
+
         public string Type { get; set; }
         
         public ObservableCollection<SensorData> SensorDatas { get; set; }
+
+        public ObservableCollection<UpdateSensorPeriod> UpdateData { get; set; }
 
         public string LastValue
         {
@@ -59,13 +78,32 @@ namespace MQTT_WPF_Client.Data
             }
         }
 
+
+
+        public TimeSpan UpdatePeriod
+        {
+            get { return _updatePeriod; }
+            set
+            {
+                _updatePeriod = value;
+                OnPropertyChanged(nameof(UpdatePeriod));
+            }
+        }
+
+ 
         public Sensor(string sensorType, string sensorUnit)
         {
             Type = sensorType;
             Unit = sensorUnit;
             LastValue = "N/A";
+ 
             SensorDatas = new ObservableCollection<SensorData>();
-            _maxElementss = 100;
+            UpdateData = new ObservableCollection<UpdateSensorPeriod>
+            {
+                new UpdateSensorPeriod {PercentToUpdate = 40, SomeText = "remaining"},
+                new UpdateSensorPeriod {PercentToUpdate = 60, SomeText = "passed"}
+            };
+            _maxElements = 100;
         }
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
@@ -80,25 +118,26 @@ namespace MQTT_WPF_Client.Data
 
         private void Update(MqttDataFormat newData)
         {
-            
+            UpdatePeriod= DateTime.Now-LastUpdated;
             LastUpdated = newData.ReceivedDt;
             LastValue = newData.Value.ToString(CultureInfo.InvariantCulture);
-
+            Debug.WriteLine($"Period:{UpdatePeriod}");
+            
         }
 
         private void NewDataReceived(MqttDataFormat newData)
         {
 
-            if (SensorDatas.Count > _maxElementss)
+            if ((SensorDatas.Count>0)&&((DateTime.Now-SensorDatas[0].ReceivedDt).Hours > 1))
             {
                 SensorDatas.RemoveAt(0);
             }
-            SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
+            SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture),newData.Voltage));
             OnPropertyChanged(nameof(SensorDatas));
 
             //if (LastValue!=newData.Value.ToString(CultureInfo.InvariantCulture)||((LastUpdated-newData.ReceivedDt).Minutes>15)||(SensorDatas.Count<15))
             //{
-            //    if (SensorDatas.Count>_maxElementss)
+            //    if (SensorDatas.Count>_maxElements)
             //    {
             //        SensorDatas.RemoveAt(0);
             //    }

@@ -97,7 +97,6 @@ namespace MQTT_WPF_Client.ViewModel
 
         public OverviewViewModel(Dispatcher dispatcher)
         {
-
             MqttReceivedData = new MQTTCollection(this);
 
             ChartIntervalType=DateTimeIntervalType.Auto;
@@ -113,7 +112,7 @@ namespace MQTT_WPF_Client.ViewModel
             As2 = new AggregatedSensors("cave", "Cave");
             As2.AddSensor("temperature", "C");
             As2.AddSensor("humidity", "%");
-
+            
             As3 = new AggregatedSensors("outside", "Outside");
             As3.AddSensor("temperature", "C");
             As3.AddSensor("humidity", "%");
@@ -129,14 +128,15 @@ namespace MQTT_WPF_Client.ViewModel
             MqttReceivedData.DataReceived += As3.MqttReceivedData;
             MqttReceivedData.DataReceived += As4.MqttReceivedData;
 
+            
+            //Settings = new SettingsCommand(this);
+            //using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db"))
+            //{
+            //    db.Database.EnsureCreated();
+            //   // db.Database.Migrate();
+            //}
+            //MqttDl.GetDataFromDB();
 
-            Settings = new SettingsCommand(this);
-            using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db"))
-            {
-                db.Database.EnsureCreated();
-               // db.Database.Migrate();
-            }
-            MqttDl.GetDataFromDB();
         }
 
         private void MqttDL_OnConnected(object sender, MqttConnectedArgs args)

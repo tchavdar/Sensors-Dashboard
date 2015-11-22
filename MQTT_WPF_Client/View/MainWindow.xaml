@@ -8,9 +8,10 @@
     xmlns:syncfusion="clr-namespace:Syncfusion.UI.Xaml.Charts;assembly=Syncfusion.SfChart.WPF"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModel="clr-namespace:MQTT_WPF_Client.ViewModel"
+    xmlns:dopaScript="clr-namespace:DopaScript"
     x:Class="MQTT_WPF_Client.MainWindow"
     mc:Ignorable="d"
-    Title="MainWindow" Height="649" Width="541" Closed="Window_Closed"
+    Title="MainWindow" Height="720.453" Width="541" Closed="Window_Closed"
     TitleCaps="False"
     ResizeMode="CanResizeWithGrip"
     GlowBrush="{DynamicResource AccentColorBrush}"
@@ -82,8 +83,8 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" MinHeight="242" />
+                        <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -114,7 +115,8 @@
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12"
-                                       Content="{Binding As2.PublicName}" />
+                                       Content="{Binding As2.PublicName}" 
+                                       ToolTip="{Binding As2.Sensors[temperature].UpdatePeriod.Seconds}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -133,7 +135,9 @@
 
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" Content="{Binding As1.PublicName}" />
+                                       Margin="5" FontSize="12" 
+                                       Content="{Binding As1.PublicName}" 
+                                       ToolTip="{Binding As1.Sensors[temperature].UpdatePeriod.Seconds}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -151,7 +155,8 @@
                             </StackPanel>
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" Content="{Binding As3.PublicName}" />
+                                       Margin="5" FontSize="12" Content="{Binding As3.PublicName}"
+                                       ToolTip="{Binding As3.Sensors[temperature].UpdatePeriod.Seconds}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -170,7 +175,8 @@
 
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" Content="{Binding As4.PublicName}" />
+                                       Margin="5" FontSize="12" Content="{Binding As4.PublicName}"
+                                       ToolTip="{Binding As4.Sensors[temperature].UpdatePeriod.Seconds}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -205,8 +211,32 @@
                                            FontSize="12" Content="%" />
                                 </StackPanel>
                             </StackPanel>-->
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center"
+                                        Width="120">
+                                <Label HorizontalAlignment="Center" Content="{Binding As2.PublicName}"></Label>
+                                <dopaScript:CircularProgressBar
+                                    HorizontalContentAlignment="Stretch"
+                                    VerticalAlignment="Center"
+                                    Width="100"
+                                    Height="100"
+                                    ShowValue="True"
+                                    BackgroundStroke="LightBlue"
+                                    Stroke="Blue"
+                                    StrokeThickness="15"
+                                    HorizontalAlignment="Center"
+                                    StValue="{Binding As2.Sensors[humidity].LastValue, Mode=TwoWay}"
+                                    x:Name="CircularProgressBar"
+                                    />
 
+                                <Label Content="{Binding As2.Sensors[humidity].LastValue}"></Label>
+                            </StackPanel>
+                            
 
+               
+                            
+                            
                         </StackPanel>
                     </GroupBox>
 
@@ -225,11 +255,10 @@
                                       ItemsSource="{Binding Source={StaticResource IntervalTypeEnum}}"
                                       SelectedItem="{Binding ChartIntervalType}" />
                         </StackPanel>
-                        <Expander Header="Charts" IsExpanded="True">
+                        <Expander Header="Charts" IsExpanded="True" >
                             <syncfusion:SfChart Header="Data"
                                                 HorizontalAlignment="Center"
-                                                Margin="10"
-                                                VerticalAlignment="Center">
+                                                VerticalAlignment="Center" Height="241" >
 
 
                                 <syncfusion:SfChart.Behaviors>
@@ -324,7 +353,7 @@
 
 
                                 </syncfusion:LineSeries>
-                                
+
                                 <syncfusion:LineSeries Label="{Binding As2.PublicName}"
                                                        ItemsSource="{Binding As2.Sensors[humidity].SensorDatas}"
                                                        XBindingPath="ReceivedDt"
@@ -391,9 +420,11 @@
                 <StackPanel>
                     <Expander Header="Received Data" IsExpanded="True">
                         <DataGrid x:Name="dataGrid"
-                              ItemsSource="{Binding Mode=OneWay, Source={StaticResource MqqtSortedCollection}}"
-                              IsReadOnly="True"
-                              AutoGenerateColumns="False">
+                                  ItemsSource="{Binding Mode=OneWay, Source={StaticResource MqqtSortedCollection}, IsAsync=True}"
+                                  IsReadOnly="True"
+                                  AutoGenerateColumns="False"
+                                  EnableColumnVirtualization="True"
+                                  EnableRowVirtualization="True">
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Data Id" Binding="{Binding SeqId}" />
@@ -410,13 +441,16 @@
                     </Expander>
                     <Expander Header="Sensor Data" IsExpanded="True">
                         <DataGrid
-                            ItemsSource="{Binding As1.Sensors[temperature].SensorDatas}"
+                            ItemsSource="{Binding As1.Sensors[temperature].SensorDatas, IsAsync=False}"
                             IsReadOnly="True"
-                            AutoGenerateColumns="False">
+                            AutoGenerateColumns="False"
+                            EnableColumnVirtualization="True"
+                            EnableRowVirtualization="True">
 
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
                                 <DataGridTextColumn Header="Received" Binding="{Binding ReceivedDt}" />
+                                <DataGridTextColumn Header="Voltage" Binding="{Binding Voltage}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </Expander>

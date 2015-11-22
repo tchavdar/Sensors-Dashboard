@@ -22,7 +22,7 @@ namespace MQTT_WPF_Client
             DataContext = ViewModel;
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+        public void Window_Closed(object sender, EventArgs e)
         {
             // doing this as I'm not sure when to call MQTT.Disconnect()
             ViewModel.CloseMqtt();

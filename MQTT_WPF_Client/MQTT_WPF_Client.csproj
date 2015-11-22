@@ -166,16 +166,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CircularProgressBar.xaml.cs">
+      <DependentUpon>CircularProgressBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data\AggregatedSensors.cs" />
     <Compile Include="Model\DBDataModel.cs" />
     <Compile Include="MQTT\MQTT Data Format.cs" />
     <Compile Include="MQTT\MQTTCollection.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModel\DesignData.cs" />
     <Compile Include="ViewModel\OverviewCommands.cs" />
     <Compile Include="ViewModel\OverviewViewModel.cs" />
     <Compile Include="View\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="CircularProgressBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

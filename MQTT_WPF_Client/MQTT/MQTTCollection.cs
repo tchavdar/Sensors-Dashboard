@@ -55,7 +55,7 @@ namespace MQTT_WPF_Client.MQTT
             {
                 this.RemoveAt(0);
             }
-            base.Add(newData);
+            //base.Add(newData);
         }
 
         public MQTTCollection(OverviewViewModel viewModel)
