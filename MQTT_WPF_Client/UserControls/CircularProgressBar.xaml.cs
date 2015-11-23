@@ -57,38 +57,38 @@ namespace DopaScript
             }
         }
 
-        private double _value = 45;
+        private double _internalValue = 0;
         [Category("ProgressBar")]
-        public double Value
+        private double InternalValue
         {
-            get { return _value; }
+            get { return _internalValue; }
             set
             {
-                _value = value;
+                _internalValue = value;
                 DrawCircle();
             }
         }
 
 
         [Category("ProgressBar")]
-        public  string StValue
+        public  string Value
         {
-            get { return (string)GetValue(StValueProperty); }
+            get { return (string)GetValue(ValueProperty); }
             set
             {
-                SetValue(StValueProperty, value);
+                SetValue(ValueProperty, value);
             }
         }
 
         // Using a DependencyProperty as the backing store for SettableValue.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty StValueProperty =
-            DependencyProperty.Register("StValue", typeof(string), typeof(CircularProgressBar), new PropertyMetadata(default(string),OnStValueChanged));
+        public static readonly DependencyProperty ValueProperty =
+            DependencyProperty.Register("Value", typeof(string), typeof(CircularProgressBar), new PropertyMetadata(default(string),OnValueChanged));
 
-        protected virtual void OnStValueChanged(string oldValue, string newValue)
+        protected virtual void OnValueChanged(string oldValue, string newValue)
         {
             try
             {
-                Value = Convert.ToDouble(newValue);
+                InternalValue = Convert.ToDouble(newValue);
             }
             catch (Exception)
             {
@@ -98,12 +98,12 @@ namespace DopaScript
             
         }
 
-        private static void OnStValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control= d as CircularProgressBar;
             if (control!=null)
             {
-                control.OnStValueChanged((string) e.OldValue, (string) e.NewValue);
+                control.OnValueChanged((string) e.OldValue, (string) e.NewValue);
 
             }
 
@@ -145,17 +145,17 @@ namespace DopaScript
         {
             get
             {
-                if (_value > _maxValue)
+                if (_internalValue > _maxValue)
                 {
                     return 100.0d;
                 }
-                else if (_value < _minValue)
+                else if (_internalValue < _minValue)
                 {
                     return 0.0d;
                 }
                 else
                 {
-                    return (100.0d / (_maxValue - _minValue)) * (_value - _minValue);
+                    return (100.0d / (_maxValue - _minValue)) * (_internalValue - _minValue);
                 }
             }
         }

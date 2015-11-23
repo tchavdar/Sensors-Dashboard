@@ -71,6 +71,5 @@
             </Ellipse.Clip>
         </Ellipse>
         <TextBlock HorizontalAlignment="Center"  Name="textBlockCenter" Text="0 %" VerticalAlignment="Center" />
-        <Label Name="StValueLabel" Content="{Binding StValue}" HorizontalAlignment="Center" VerticalAlignment="Bottom"></Label>
     </Grid>
 </UserControl>

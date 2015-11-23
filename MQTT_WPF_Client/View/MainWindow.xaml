@@ -110,7 +110,7 @@
 
                     </StackPanel>
                     <GroupBox Grid.Row="1" Header="Locations">
-                        <StackPanel Orientation="Horizontal">
+                        <WrapPanel Orientation="Horizontal">
 
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
@@ -211,33 +211,71 @@
                                            FontSize="12" Content="%" />
                                 </StackPanel>
                             </StackPanel>-->
+                            
                             <StackPanel Orientation="Vertical"
-                                        HorizontalAlignment="Center" 
+                                        HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Width="120">
-                                <Label HorizontalAlignment="Center" Content="{Binding As2.PublicName}"></Label>
-                                <dopaScript:CircularProgressBar
-                                    HorizontalContentAlignment="Stretch"
-                                    VerticalAlignment="Center"
-                                    Width="100"
-                                    Height="100"
-                                    ShowValue="True"
-                                    BackgroundStroke="LightBlue"
-                                    Stroke="Blue"
-                                    StrokeThickness="15"
-                                    HorizontalAlignment="Center"
-                                    StValue="{Binding As2.Sensors[humidity].LastValue, Mode=TwoWay}"
-                                    x:Name="CircularProgressBar"
-                                    />
+                                
+                                <Grid Background="LightCyan" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label HorizontalAlignment="Center"
+                                           Content="{Binding As3.PublicName}"
+                                           Grid.Row="0" />
 
-                                <Label Content="{Binding As2.Sensors[humidity].LastValue}"></Label>
+                                    <dopaScript:CircularProgressBar
+                                        Grid.Row="1"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Width="100"
+                                        Height="100"
+                                        ShowValue="True"
+                                        BackgroundStroke="LightBlue"
+                                        Stroke="DeepSkyBlue"
+                                        StrokeThickness="25"
+                                        HorizontalAlignment="Center"
+                                        Value="{Binding As3.Sensors[humidity].LastValue, 
+                                        Mode=TwoWay}" />
+
+                                    <dopaScript:CircularProgressBar
+                                        Grid.Row="1"
+                                        HorizontalContentAlignment="Stretch"
+                                        VerticalAlignment="Center"
+                                        Width="100"
+                                        Height="100"
+                                        ShowValue="False"
+                                        BackgroundStroke="CornflowerBlue"
+                                        Stroke="Blue"
+                                        StrokeThickness="4"
+                                        HorizontalAlignment="Center"
+                                        Value="{Binding As3.Sensors[humidity].PercentToUpdate, 
+                                        Mode=TwoWay}" />
+                                    
+                                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                                        <Label 
+                                           Content="{Binding As3.Sensors[temperature].LastValue}">
+                                        </Label>
+                                        <Label 
+                                           Content="{Binding As3.Sensors[temperature].Unit}">
+                                        </Label>
+                                    </StackPanel>
+
+
+                                    
+                                </Grid>
+                                
+                                
                             </StackPanel>
                             
 
                
                             
                             
-                        </StackPanel>
+                        </WrapPanel>
                     </GroupBox>
 
                     <StackPanel Grid.Row="2">

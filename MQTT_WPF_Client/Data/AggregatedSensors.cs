@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Timers;
 using MQTT_WPF_Client.Annotations;
 using MQTT_WPF_Client.MQTT;
 
@@ -31,12 +32,6 @@ namespace MQTT_WPF_Client.Data
 
     }
 
-    public class UpdateSensorPeriod
-    {
-        public string SomeText { get; set; }
-        public int PercentToUpdate { get; set; }
-    }
-
 
 
 
@@ -49,11 +44,26 @@ namespace MQTT_WPF_Client.Data
         private DateTime _lastUpdated;
         private TimeSpan _updatePeriod;
 
+
+        private double _percentToUpdate;
+
+        public double PercentToUpdate
+        {
+            get { return _percentToUpdate; }
+            set
+            {
+                _percentToUpdate = value;
+                OnPropertyChanged(nameof(PercentToUpdate));
+            }
+        }
+
+        private Timer _timer;
+
         public string Type { get; set; }
         
         public ObservableCollection<SensorData> SensorDatas { get; set; }
 
-        public ObservableCollection<UpdateSensorPeriod> UpdateData { get; set; }
+        
 
         public string LastValue
         {
@@ -98,12 +108,19 @@ namespace MQTT_WPF_Client.Data
             LastValue = "N/A";
  
             SensorDatas = new ObservableCollection<SensorData>();
-            UpdateData = new ObservableCollection<UpdateSensorPeriod>
-            {
-                new UpdateSensorPeriod {PercentToUpdate = 40, SomeText = "remaining"},
-                new UpdateSensorPeriod {PercentToUpdate = 60, SomeText = "passed"}
-            };
+            PercentToUpdate = 10;
             _maxElements = 100;
+            _timer=new Timer(500);
+            _timer.Enabled = false;
+            _timer.Elapsed += _timer_Elapsed;
+            _timer.AutoReset = true;
+
+        }
+
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            PercentToUpdate = 100-(double)(UpdatePeriod.Seconds - (DateTime.Now - LastUpdated).Seconds)/ (UpdatePeriod.Seconds / 100f);
+       //     Debug.WriteLine($"FIRED {PercentToUpdate}");
         }
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
@@ -122,7 +139,8 @@ namespace MQTT_WPF_Client.Data
             LastUpdated = newData.ReceivedDt;
             LastValue = newData.Value.ToString(CultureInfo.InvariantCulture);
             Debug.WriteLine($"Period:{UpdatePeriod}");
-            
+            _timer.Enabled = true;
+
         }
 
         private void NewDataReceived(MqttDataFormat newData)
@@ -177,6 +195,9 @@ namespace MQTT_WPF_Client.Data
             Location = location;
             PublicName = publicName;
         }
+
+
+
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
         {
             if (e.newData.Location.Contains(Location))
