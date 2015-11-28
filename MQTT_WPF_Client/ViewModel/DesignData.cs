@@ -1,20 +1,24 @@
 ﻿using System;
 using MQTT_WPF_Client.Data;
+using Syncfusion.Windows.Chart;
 
-namespace MQTT_WPF_Client.ViewModel
+namespace MQTT_WPF_Client.Design
 {
     public class DesignTimeASensor
     {
-        public AggregatedSensors AggregatedSensor { get; set; }
+        public AggregatedSensors AS { get; set; }
+
+        
         public DesignTimeASensor()
         {
-            var asensor=new AggregatedSensors("Designer","Design Sensor");
+            this.AS = new AggregatedSensors("Designer","Design Sensor");
             
-            
-            var temperature = new Sensor("temperature", "C");
+            var temperature = new Sensor("temperature", "F");
             var humidity= new Sensor("humidity", "%");
-            asensor.Sensors.Add("temperature", temperature);
-            asensor.Sensors.Add("humidity",humidity);
+            this.AS.Sensors.Add("temperature", temperature);
+            this.AS.Sensors.Add("humidity",humidity);
+            humidity.LastValue = "90";
+            temperature.LastValue = "90";
 
             temperature.SensorDatas.Add(new SensorData(DateTime.Now, "10",2000));
             humidity.SensorDatas.Add(new SensorData(DateTime.Now, "80", 2000));

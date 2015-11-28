@@ -8,8 +8,12 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Timers;
+using System.Windows;
+using System.Windows.Media.Animation;
 using MQTT_WPF_Client.Annotations;
+using MQTT_WPF_Client.Extensions;
 using MQTT_WPF_Client.MQTT;
+using Syncfusion.Windows.Chart;
 
 namespace MQTT_WPF_Client.Data
 {
@@ -57,7 +61,6 @@ namespace MQTT_WPF_Client.Data
             }
         }
 
-        private Timer _timer;
 
         public string Type { get; set; }
         
@@ -97,30 +100,30 @@ namespace MQTT_WPF_Client.Data
             {
                 _updatePeriod = value;
                 OnPropertyChanged(nameof(UpdatePeriod));
+                OnPropertyChanged(nameof(Duration));
             }
         }
 
- 
+        public string Duration
+        {
+            get
+            {
+                return UpdatePeriod.ToAnimatedDuration();
+            }
+        }
+
         public Sensor(string sensorType, string sensorUnit)
         {
             Type = sensorType;
             Unit = sensorUnit;
             LastValue = "N/A";
+            LastUpdated=DateTime.Now;
  
             SensorDatas = new ObservableCollection<SensorData>();
-            PercentToUpdate = 10;
+            PercentToUpdate = 100;
             _maxElements = 100;
-            _timer=new Timer(500);
-            _timer.Enabled = false;
-            _timer.Elapsed += _timer_Elapsed;
-            _timer.AutoReset = true;
+            UpdatePeriod = TimeSpan.FromSeconds(10);
 
-        }
-
-        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            PercentToUpdate = 100-(double)(UpdatePeriod.Seconds - (DateTime.Now - LastUpdated).Seconds)/ (UpdatePeriod.Seconds / 100f);
-       //     Debug.WriteLine($"FIRED {PercentToUpdate}");
         }
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
@@ -135,11 +138,13 @@ namespace MQTT_WPF_Client.Data
 
         private void Update(MqttDataFormat newData)
         {
-            UpdatePeriod= DateTime.Now-LastUpdated;
+            
+            UpdatePeriod = (DateTime.Now - LastUpdated);
+
+            PercentToUpdate = 0;
             LastUpdated = newData.ReceivedDt;
             LastValue = newData.Value.ToString(CultureInfo.InvariantCulture);
-            Debug.WriteLine($"Period:{UpdatePeriod}");
-            _timer.Enabled = true;
+            Debug.WriteLine($"Period:{UpdatePeriod.ToAnimatedDuration()}");
 
         }
 
@@ -152,17 +157,6 @@ namespace MQTT_WPF_Client.Data
             }
             SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture),newData.Voltage));
             OnPropertyChanged(nameof(SensorDatas));
-
-            //if (LastValue!=newData.Value.ToString(CultureInfo.InvariantCulture)||((LastUpdated-newData.ReceivedDt).Minutes>15)||(SensorDatas.Count<15))
-            //{
-            //    if (SensorDatas.Count>_maxElements)
-            //    {
-            //        SensorDatas.RemoveAt(0);
-            //    }
-            //    SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture)));
-            //    Debug.WriteLine($"Sensor:{Type}:{Unit} received:{newData.Value.ToString(CultureInfo.InvariantCulture)}");
-            //    OnPropertyChanged(nameof(SensorDatas));
-            //}
 
         }
 

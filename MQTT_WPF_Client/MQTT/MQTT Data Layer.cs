@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity;
 using MQTT_client.Data;
 using Polly;
 using uPLibrary.Networking.M2Mqtt;
@@ -159,17 +158,7 @@ namespace MQTT_WPF_Client.MQTT
             OnDataLayerPublishReceived(new MqttMsgPublishEventArgs("myhome/test/cave/humidity", Encoding.GetEncoding("UTF-8").GetBytes("56 id:000 SID:FAKE_1"),false,1,false));
         }
 
-        public void GetDataFromDB()
-        {
-            using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db "))
-            {
-                Task query = db.Messages.Where(x => x.ProcessedDateTime.Year<2000).ForEachAsync(x=> OnDataLayerPublishReceived(new MqttMsgPublishEventArgs(x.Topic,
-                        Encoding.GetEncoding("UTF-8").GetBytes(x.Message), false, 1, false)));
-               
-            }
-        }
 
-        public RawMQTTDataModel DLDbContext { get; set; }
 
     }
 

@@ -9,6 +9,7 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModel="clr-namespace:MQTT_WPF_Client.ViewModel"
     xmlns:dopaScript="clr-namespace:DopaScript"
+    xmlns:userControls="clr-namespace:MQTT_WPF_Client.UserControls"
     x:Class="MQTT_WPF_Client.MainWindow"
     mc:Ignorable="d"
     Title="MainWindow" Height="720.453" Width="541" Closed="Window_Closed"
@@ -116,7 +117,7 @@
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12"
                                        Content="{Binding As2.PublicName}" 
-                                       ToolTip="{Binding As2.Sensors[temperature].UpdatePeriod.Seconds}"/>
+                                       ToolTip="{Binding As2.Sensors[temperature].UpdatePeriod}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -137,7 +138,7 @@
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12" 
                                        Content="{Binding As1.PublicName}" 
-                                       ToolTip="{Binding As1.Sensors[temperature].UpdatePeriod.Seconds}"/>
+                                       ToolTip="{Binding As1.Sensors[temperature].UpdatePeriod}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -156,7 +157,7 @@
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12" Content="{Binding As3.PublicName}"
-                                       ToolTip="{Binding As3.Sensors[temperature].UpdatePeriod.Seconds}"/>
+                                       ToolTip="{Binding As3.Sensors[temperature].UpdatePeriod}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -176,7 +177,7 @@
                             <StackPanel Orientation="Vertical">
                                 <Label HorizontalAlignment="Left"
                                        Margin="5" FontSize="12" Content="{Binding As4.PublicName}"
-                                       ToolTip="{Binding As4.Sensors[temperature].UpdatePeriod.Seconds}"/>
+                                       ToolTip="{Binding As4.Sensors[temperature].UpdatePeriod}"/>
                                 <!--temperature-->
                                 <StackPanel Orientation="Horizontal">
                                     <Label HorizontalAlignment="Right"
@@ -212,10 +213,10 @@
                                 </StackPanel>
                             </StackPanel>-->
                             
-                            <StackPanel Orientation="Vertical"
+                            <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Width="120">
+                                        Width="Auto">
                                 
                                 <Grid Background="LightCyan" >
                                     <Grid.RowDefinitions>
@@ -229,6 +230,7 @@
 
                                     <dopaScript:CircularProgressBar
                                         Grid.Row="1"
+                                        x:Name="Hum1"
                                         HorizontalContentAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         Width="100"
@@ -238,8 +240,10 @@
                                         Stroke="DeepSkyBlue"
                                         StrokeThickness="25"
                                         HorizontalAlignment="Center"
-                                        Value="{Binding As3.Sensors[humidity].LastValue, 
-                                        Mode=TwoWay}" />
+                                        Value="{Binding As3.Sensors[humidity].LastValue}">
+                                 
+                                    </dopaScript:CircularProgressBar>
+
 
                                     <dopaScript:CircularProgressBar
                                         Grid.Row="1"
@@ -248,13 +252,30 @@
                                         Width="100"
                                         Height="100"
                                         ShowValue="False"
-                                        BackgroundStroke="CornflowerBlue"
+                                        BackgroundStroke="LightYellow"
                                         Stroke="Blue"
-                                        StrokeThickness="4"
+                                        StrokeThickness="2"
                                         HorizontalAlignment="Center"
-                                        Value="{Binding As3.Sensors[humidity].PercentToUpdate, 
-                                        Mode=TwoWay}" />
-                                    
+                                        Value="{Binding As3.Sensors[humidity].LastValue}">
+
+                                        <dopaScript:CircularProgressBar.Triggers>
+                                            <EventTrigger RoutedEvent="dopaScript:CircularProgressBar.ValueChanged">
+                                                <EventTrigger.Actions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard TargetProperty="InternalValue">
+                                                            <DoubleAnimation From="0"
+                                                                             To="100"
+                                                                             Duration="{Binding As3.Sensors[humidity].Duration}"
+                                                                             AutoReverse="False">
+
+                                                            </DoubleAnimation>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </EventTrigger.Actions>
+                                            </EventTrigger>
+                                        </dopaScript:CircularProgressBar.Triggers>
+                                    </dopaScript:CircularProgressBar>
+
                                     <StackPanel Orientation="Horizontal" Grid.Row="2">
                                         <Label 
                                            Content="{Binding As3.Sensors[temperature].LastValue}">
@@ -267,8 +288,7 @@
 
                                     
                                 </Grid>
-                                
-                                
+
                             </StackPanel>
                             
 
@@ -479,7 +499,7 @@
                     </Expander>
                     <Expander Header="Sensor Data" IsExpanded="True">
                         <DataGrid
-                            ItemsSource="{Binding As1.Sensors[temperature].SensorDatas, IsAsync=False}"
+                            ItemsSource="{Binding As.Sensors[temperature].SensorDatas, IsAsync=False}"
                             IsReadOnly="True"
                             AutoGenerateColumns="False"
                             EnableColumnVirtualization="True"

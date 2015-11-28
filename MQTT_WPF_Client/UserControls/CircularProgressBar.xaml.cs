@@ -58,42 +58,82 @@ namespace DopaScript
         }
 
         private double _internalValue = 0;
-        [Category("ProgressBar")]
-        private double InternalValue
+
+        //[Category("ProgressBar")]
+        //public double InternalValue
+        //{
+        //    get { return _internalValue; }
+        //    set
+        //    {
+        //        _internalValue = value;
+        //        DrawCircle();
+        //    }
+        //}
+
+
+
+
+
+        public double InternalValue
         {
-            get { return _internalValue; }
-            set
+            get { return (double)GetValue(InternalValueProperty); }
+            set { SetValue(InternalValueProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for InternalValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InternalValueProperty =
+            DependencyProperty.Register("InternalValue", typeof(double), typeof(CircularProgressBar), new PropertyMetadata(default(double),OnInternalValueChange));
+
+        private static void OnInternalValueChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as CircularProgressBar;
+            if (control != null)
             {
-                _internalValue = value;
-                DrawCircle();
+                try
+                {
+                    control.OnInternalValueChange((double)e.OldValue, (double)e.NewValue);
+                }
+                catch (Exception)
+                {
+
+                    Debug.WriteLine($"Problem with {e.OldValue} and {e.NewValue} in OnInternalValueChange");
+                }
+
             }
         }
 
+        private void OnInternalValueChange(double oldValue, double newValue)
+        {
+            _internalValue = newValue;
+            DrawCircle();
+        }
 
         [Category("ProgressBar")]
-        public  string Value
+        public  double Value
         {
-            get { return (string)GetValue(ValueProperty); }
+            get { return (double)GetValue(ValueProperty); }
             set
             {
                 SetValue(ValueProperty, value);
             }
         }
 
-        // Using a DependencyProperty as the backing store for SettableValue.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(string), typeof(CircularProgressBar), new PropertyMetadata(default(string),OnValueChanged));
+            DependencyProperty.Register("Value", typeof(double), typeof(CircularProgressBar), new PropertyMetadata(default(double),OnValueChanged));
 
-        protected virtual void OnValueChanged(string oldValue, string newValue)
+        protected virtual void OnValueChanged(double oldValue, double newValue)
         {
             try
             {
-                InternalValue = Convert.ToDouble(newValue);
+                InternalValue = newValue;
+                RaiseValueChangedEvent();
+
+                //raise the Value_Changed event
             }
             catch (Exception)
             {
                 
-                Debug.WriteLine($"Unable to convert to Double {newValue}");
+                Debug.WriteLine($"Unable to raise event");
             }
             
         }
@@ -103,12 +143,34 @@ namespace DopaScript
             var control= d as CircularProgressBar;
             if (control!=null)
             {
-                control.OnValueChanged((string) e.OldValue, (string) e.NewValue);
+                try
+                {
+                    control.OnValueChanged((double)e.OldValue, (double)e.NewValue);
+                }
+                catch (Exception)
+                {
 
+                    Debug.WriteLine($"Problem with {e.OldValue} and {e.NewValue}");
+                }
+                
             }
 
         }
 
+        public event RoutedEventHandler ValueChanged
+        {
+            add { AddHandler(ValueChangedEvent, value);}
+            remove { RemoveHandler(ValueChangedEvent,value);}
+        }
+
+        protected virtual void RaiseValueChangedEvent()
+        {
+            var args = new RoutedEventArgs(ValueChangedEvent);
+            RaiseEvent(args);
+        }
+
+        public static readonly RoutedEvent ValueChangedEvent = EventManager.RegisterRoutedEvent("ValueChanged",
+            RoutingStrategy.Direct, typeof (RoutedEventHandler), typeof (CircularProgressBar));
 
         private double _maxValue = 100;
         [Category("ProgressBar")]

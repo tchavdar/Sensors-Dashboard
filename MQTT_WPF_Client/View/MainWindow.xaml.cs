@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using MahApps.Metro.Controls;
 using MQTT_WPF_Client.ViewModel;
@@ -32,5 +33,6 @@ namespace MQTT_WPF_Client
         {
             ViewModel.IsSettingsFlyoutOpen=true;
         }
+
     }
 }
