@@ -218,7 +218,7 @@
                                         VerticalAlignment="Center"
                                         Width="Auto">
                                 
-                                <Grid Background="LightCyan" >
+                                <!--<Grid Background="LightCyan" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -287,7 +287,24 @@
 
 
                                     
-                                </Grid>
+                                </Grid>-->
+
+
+                                <userControls:Dht22SensorControl
+                                    DataContext="{Binding As1}"
+                                    Margin="5"/>
+                                
+                                <userControls:Dht22SensorControl
+                                    DataContext="{Binding As2}" 
+                                    Margin="5"/>
+
+                                <userControls:Dht22SensorControl
+                                    DataContext="{Binding As3}" 
+                                    Margin="5"/>
+
+                                <userControls:Dht22SensorControl
+                                    DataContext="{Binding As4}" 
+                                    Margin="5"/>
 
                             </StackPanel>
                             
