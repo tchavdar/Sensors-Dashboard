@@ -18,7 +18,8 @@ namespace MQTT_WPF_Client.Design
             Sensors.Add("temperature", temperature);
             Sensors.Add("humidity",humidity);
             humidity.LastValue = "90";
-            temperature.LastValue = "90";
+            temperature.LastValue = "20.7";
+            humidity.Offline = true;
 
             temperature.SensorDatas.Add(new SensorData(DateTime.Now, "10",2000));
             humidity.SensorDatas.Add(new SensorData(DateTime.Now, "80", 2000));

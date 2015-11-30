@@ -1,15 +1,17 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Threading;
 using MQTT_WPF_Client.Data;
 using MQTT_WPF_Client.MQTT;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Data;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MQTT_client.Data;
 using MQTT_WPF_Client.Annotations;
-
+using MQTT_WPF_Client.UserControls;
 using Syncfusion.UI.Xaml.Charts;
 
 
@@ -19,8 +21,6 @@ namespace MQTT_WPF_Client.ViewModel
     {
         
         public MQTTCollection MqttReceivedData { get; set; }
-
-
 
 
         public AggregatedSensors As4
@@ -34,7 +34,6 @@ namespace MQTT_WPF_Client.ViewModel
             DependencyProperty.Register("As4", typeof(AggregatedSensors), typeof(Window), new PropertyMetadata(null));
 
 
-
         public AggregatedSensors As1
         {
             get { return (AggregatedSensors)GetValue(As1Property); }
@@ -42,13 +41,11 @@ namespace MQTT_WPF_Client.ViewModel
         }
 
 
-
         public AggregatedSensors As2 
         {
             get { return (AggregatedSensors)GetValue(As2Property); }
             set { SetValue(As2Property, value); }
         }
-
 
 
         public ICommand Settings { get; set; }
@@ -90,16 +87,17 @@ namespace MQTT_WPF_Client.ViewModel
             DependencyProperty.Register("IsSettingsFlyoutOpen", typeof(bool), typeof(MetroWindow), new PropertyMetadata(null));
 
 
+        public MqttDataLayer MqttDl { get; set; }
 
 
-
- public MqttDataLayer MqttDl { get; set; }
-
-        public OverviewViewModel(Dispatcher dispatcher)
+        public List<AggregatedSensors> sensorsList; 
+        public OverviewViewModel(MainWindow mainWindow)
         {
             MqttReceivedData = new MQTTCollection(this);
+            sensorsList = new List<AggregatedSensors>();
 
-            ChartIntervalType=DateTimeIntervalType.Auto;
+            ChartIntervalType = DateTimeIntervalType.Auto;
+
             //Creating the data layer 
             MqttDl = new MqttDataLayer("WPF Client", "192.168.2.122");
             MqttDl.OnConnected += MqttDL_OnConnected;
@@ -109,18 +107,25 @@ namespace MQTT_WPF_Client.ViewModel
             As1.AddSensor("temperature", "C");
             As1.AddSensor("humidity", "%");
 
+            sensorsList.Add(As1);
+
             As2 = new AggregatedSensors("cave", "Cave");
             As2.AddSensor("temperature", "C");
             As2.AddSensor("humidity", "%");
-            
+
+            sensorsList.Add(As2);
+
             As3 = new AggregatedSensors("outside", "Outside");
             As3.AddSensor("temperature", "C");
             As3.AddSensor("humidity", "%");
+
+            sensorsList.Add(As3);
 
             As4 = new AggregatedSensors("sleeping_room", "Sleeping room");
             As4.AddSensor("temperature", "C");
             As4.AddSensor("humidity", "%");
 
+            sensorsList.Add(As4);
             //note that the sensors listen to the collection events not the data layer events
             //the collection takes care to parse the received data so that the agregated sensors can use it directly
             MqttReceivedData.DataReceived += As1.MqttReceivedData;
@@ -128,14 +133,28 @@ namespace MQTT_WPF_Client.ViewModel
             MqttReceivedData.DataReceived += As3.MqttReceivedData;
             MqttReceivedData.DataReceived += As4.MqttReceivedData;
 
-            
-            //Settings = new SettingsCommand(this);
-            //using (var db = new RawMQTTDataModel(@"z:\RPi\MQTT\MQTTRawData.db"))
-            //{
-            //    db.Database.EnsureCreated();
-            //   // db.Database.Migrate();
-            //}
-            //MqttDl.GetDataFromDB();
+            Dht22SensorControl dht22;
+            foreach (var aggregatedSensor in sensorsList)
+            {
+                dht22 = new Dht22SensorControl();
+                dht22.DataContext = aggregatedSensor;
+                dht22.Margin = new Thickness(5);
+                Binding myBinding = new Binding
+                {
+                    Source = aggregatedSensor.Sensors["temperature"],
+                    Path = new PropertyPath("LastUpdated"),
+                    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                };
+
+                dht22.SetBinding(Dht22SensorControl.LastUpdatedProperty, myBinding);
+                    mainWindow.SensorsContainerPanel.Children.Add(dht22);
+
+            }
+
+
+
+
+
 
         }
 

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Humanizer;
 using MQTT_WPF_Client.Annotations;
 using MQTT_WPF_Client.Extensions;
 using MQTT_WPF_Client.MQTT;
@@ -38,6 +39,13 @@ namespace MQTT_WPF_Client.Data
         private string _lastValue;
         private DateTime _lastUpdated;
         private TimeSpan _updatePeriod;
+        public string ReceivedDtHumanized
+        {
+            get
+            {
+                return LastUpdated.Humanize(false);
+            }
+        }
 
 
         public string Type { get; set; }
@@ -64,6 +72,7 @@ namespace MQTT_WPF_Client.Data
             {
                 _lastUpdated = value;
                 OnPropertyChanged(nameof(LastUpdated));
+                OnPropertyChanged(ReceivedDtHumanized);
             }
         }
 
@@ -82,12 +91,24 @@ namespace MQTT_WPF_Client.Data
 
         public string Duration => UpdatePeriod.ToAnimatedDuration();
 
+        private bool _offline;
+        public bool Offline
+        {
+            get { return _offline; }
+            set
+            {
+                _offline = value;
+                OnPropertyChanged(nameof(Offline));
+            }
+        }
+
         public Sensor(string sensorType, string sensorUnit)
         {
             Type = sensorType;
             Unit = sensorUnit;
             LastValue = "N/A";
             LastUpdated=DateTime.Now;
+            Offline = false;
  
             SensorDatas = new ObservableCollection<SensorData>();
             _maxElements = 100;
@@ -97,18 +118,31 @@ namespace MQTT_WPF_Client.Data
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
         {
+            //the offline info arrives at Location as for now for a location we may have several sensors
+            //we put them all offline no matter the type
+            if (e.newData.Offline)
+            {
+                ReceivedOffline(e.newData);
+                return;
+            }
+
             if (e.newData.SensorType == Type)
             {
-                NewDataReceived(e.newData);
-                Update(e.newData);
+                    NewDataReceived(e.newData);
+                    Update(e.newData);
             }
+        }
+
+        private void ReceivedOffline(MqttDataFormat newData)
+        {
+            Offline = true;
         }
 
         private void Update(MqttDataFormat newData)
         {
             
             UpdatePeriod = (DateTime.Now - LastUpdated);
-
+            Offline = false;
             LastUpdated = newData.ReceivedDt;
             LastValue = newData.Value.ToString(CultureInfo.InvariantCulture);
             Debug.WriteLine($"Period:{UpdatePeriod.ToAnimatedDuration()}");
@@ -156,8 +190,7 @@ namespace MQTT_WPF_Client.Data
             Location = location;
             PublicName = publicName;
         }
-
-
+        
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
         {

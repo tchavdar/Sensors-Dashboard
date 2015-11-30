@@ -74,8 +74,8 @@
             <ResourceDictionary Source="/Resources/Icons.xaml" />
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="366*"/>
-            <ColumnDefinition Width="167*"/>
+            <ColumnDefinition Width="366*" />
+            <ColumnDefinition Width="167*" />
         </Grid.ColumnDefinitions>
         <controls:MetroAnimatedTabControl
             controls:TabControlHelper.IsUnderlined="True"
@@ -111,207 +111,11 @@
 
                     </StackPanel>
                     <GroupBox Grid.Row="1" Header="Locations">
-                        <WrapPanel Orientation="Horizontal">
-
-                            <StackPanel Orientation="Vertical">
-                                <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12"
-                                       Content="{Binding As2.PublicName}" 
-                                       ToolTip="{Binding As2.Sensors[temperature].UpdatePeriod}"/>
-                                <!--temperature-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As2.Sensors[temperature].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As2.Sensors[temperature].Unit}" />
-                                </StackPanel>
-                                <!--humidity-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As2.Sensors[humidity].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As2.Sensors[humidity].Unit}" />
-                                </StackPanel>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Vertical">
-                                <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" 
-                                       Content="{Binding As1.PublicName}" 
-                                       ToolTip="{Binding As1.Sensors[temperature].UpdatePeriod}"/>
-                                <!--temperature-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As1.Sensors[temperature].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As1.Sensors[temperature].Unit}" />
-                                </StackPanel>
-                                <!--humidity-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As1.Sensors[humidity].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As1.Sensors[humidity].Unit}" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" Content="{Binding As3.PublicName}"
-                                       ToolTip="{Binding As3.Sensors[temperature].UpdatePeriod}"/>
-                                <!--temperature-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As3.Sensors[temperature].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As3.Sensors[temperature].Unit}" />
-                                </StackPanel>
-                                <!--humidity-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As3.Sensors[humidity].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As3.Sensors[humidity].Unit}" />
-                                </StackPanel>
-                            </StackPanel>
-
-                            <StackPanel Orientation="Vertical">
-                                <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12" Content="{Binding As4.PublicName}"
-                                       ToolTip="{Binding As4.Sensors[temperature].UpdatePeriod}"/>
-                                <!--temperature-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As4.Sensors[temperature].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As4.Sensors[temperature].Unit}" />
-                                </StackPanel>
-                                <!--humidity-->
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="{Binding As4.Sensors[humidity].LastValue}" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="{Binding As4.Sensors[humidity].Unit}" />
-                                </StackPanel>
-                            </StackPanel>
-                            <!--<StackPanel Orientation="Vertical">
-                                <Label HorizontalAlignment="Left"
-                                       Margin="5" FontSize="12">
-                                    Data22AS
-                                </Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="24" />
-                                    <Label HorizontalAlignment="Left"
-                                           VerticalAlignment="Top"
-                                           FontSize="12" Content="C" Margin="-10" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label HorizontalAlignment="Right"
-                                           FontSize="23" Content="100" />
-                                    <Label HorizontalAlignment="Left"
-                                           FontSize="12" Content="%" />
-                                </StackPanel>
-                            </StackPanel>-->
-                            
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Width="Auto">
-                                
-                                <!--<Grid Background="LightCyan" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Label HorizontalAlignment="Center"
-                                           Content="{Binding As3.PublicName}"
-                                           Grid.Row="0" />
-
-                                    <dopaScript:CircularProgressBar
-                                        Grid.Row="1"
-                                        x:Name="Hum1"
-                                        HorizontalContentAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Width="100"
-                                        Height="100"
-                                        ShowValue="True"
-                                        BackgroundStroke="LightBlue"
-                                        Stroke="DeepSkyBlue"
-                                        StrokeThickness="25"
-                                        HorizontalAlignment="Center"
-                                        Value="{Binding As3.Sensors[humidity].LastValue}">
-                                 
-                                    </dopaScript:CircularProgressBar>
 
 
-                                    <dopaScript:CircularProgressBar
-                                        Grid.Row="1"
-                                        HorizontalContentAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        Width="100"
-                                        Height="100"
-                                        ShowValue="False"
-                                        BackgroundStroke="LightYellow"
-                                        Stroke="Blue"
-                                        StrokeThickness="2"
-                                        HorizontalAlignment="Center"
-                                        Value="{Binding As3.Sensors[humidity].LastValue}">
+                        <WrapPanel Orientation="Horizontal"
+                                   x:Name="SensorsContainerPanel">
 
-                                        <dopaScript:CircularProgressBar.Triggers>
-                                            <EventTrigger RoutedEvent="dopaScript:CircularProgressBar.ValueChanged">
-                                                <EventTrigger.Actions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard TargetProperty="InternalValue">
-                                                            <DoubleAnimation From="0"
-                                                                             To="100"
-                                                                             Duration="{Binding As3.Sensors[humidity].Duration}"
-                                                                             AutoReverse="False">
-
-                                                            </DoubleAnimation>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </EventTrigger.Actions>
-                                            </EventTrigger>
-                                        </dopaScript:CircularProgressBar.Triggers>
-                                    </dopaScript:CircularProgressBar>
-
-                                    <StackPanel Orientation="Horizontal" Grid.Row="2">
-                                        <Label 
-                                           Content="{Binding As3.Sensors[temperature].LastValue}">
-                                        </Label>
-                                        <Label 
-                                           Content="{Binding As3.Sensors[temperature].Unit}">
-                                        </Label>
-                                    </StackPanel>
-
-
-                                    
-                                </Grid>-->
-
-
-                                <userControls:Dht22SensorControl
-                                    DataContext="{Binding As1}"
-                                    Margin="5"/>
-                                
-                                <userControls:Dht22SensorControl
-                                    DataContext="{Binding As2}" 
-                                    Margin="5"/>
-
-                                <userControls:Dht22SensorControl
-                                    DataContext="{Binding As3}" 
-                                    Margin="5"/>
-
-                                <userControls:Dht22SensorControl
-                                    DataContext="{Binding As4}" 
-                                    Margin="5"/>
-
-                            </StackPanel>
-                            
-
-               
-                            
-                            
                         </WrapPanel>
                     </GroupBox>
 
@@ -330,10 +134,10 @@
                                       ItemsSource="{Binding Source={StaticResource IntervalTypeEnum}}"
                                       SelectedItem="{Binding ChartIntervalType}" />
                         </StackPanel>
-                        <Expander Header="Charts" IsExpanded="True" >
+                        <Expander Header="Charts" IsExpanded="True">
                             <syncfusion:SfChart Header="Data"
                                                 HorizontalAlignment="Center"
-                                                VerticalAlignment="Center" Height="241" >
+                                                VerticalAlignment="Center" Height="241">
 
 
                                 <syncfusion:SfChart.Behaviors>
@@ -506,10 +310,9 @@
                                 <DataGridTextColumn Header="Sensor Type" Binding="{Binding SensorType}" />
                                 <DataGridTextColumn Header="LastValue" Binding="{Binding Value}" />
                                 <DataGridTextColumn Header="Location" Binding="{Binding Location}" />
-                                <DataGridTextColumn Header="How old" Binding="{Binding ReceivedDtHumanized}" />
                                 <DataGridTextColumn Header="Sensor ID" Binding="{Binding SensorId}" />
                                 <DataGridTextColumn Header="Received" Binding="{Binding ReceivedDt}"
-                                                SortDirection="Descending" />
+                                                    SortDirection="Descending" />
 
                             </DataGrid.Columns>
                         </DataGrid>

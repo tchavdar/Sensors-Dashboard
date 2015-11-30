@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using MahApps.Metro.Controls;
+using MQTT_WPF_Client.UserControls;
 using MQTT_WPF_Client.ViewModel;
 
 namespace MQTT_WPF_Client
@@ -19,8 +20,9 @@ namespace MQTT_WPF_Client
         {
             InitializeComponent();
             
-            ViewModel=new OverviewViewModel(this.Dispatcher);
+            ViewModel=new OverviewViewModel(this);
             DataContext = ViewModel;
+
         }
 
         public void Window_Closed(object sender, EventArgs e)

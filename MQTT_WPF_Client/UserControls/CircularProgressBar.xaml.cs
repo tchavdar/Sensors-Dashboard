@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows.Media.Effects;
 
 namespace DopaScript
 {
@@ -123,38 +124,16 @@ namespace DopaScript
 
         protected virtual void OnValueChanged(double oldValue, double newValue)
         {
-            try
-            {
-                InternalValue = newValue;
-                RaiseValueChangedEvent();
 
-                //raise the Value_Changed event
-            }
-            catch (Exception)
-            {
-                
-                Debug.WriteLine($"Unable to raise event");
-            }
-            
+            InternalValue = newValue;
+            RaiseValueChangedEvent();
+           
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control= d as CircularProgressBar;
-            if (control!=null)
-            {
-                try
-                {
-                    control.OnValueChanged((double)e.OldValue, (double)e.NewValue);
-                }
-                catch (Exception)
-                {
-
-                    Debug.WriteLine($"Problem with {e.OldValue} and {e.NewValue}");
-                }
-                
-            }
-
+            control?.OnValueChanged((double)e.OldValue, (double)e.NewValue);
         }
 
         public event RoutedEventHandler ValueChanged

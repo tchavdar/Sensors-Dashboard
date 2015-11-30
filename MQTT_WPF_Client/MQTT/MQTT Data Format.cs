@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Humanizer;
@@ -42,7 +43,7 @@ namespace MQTT_WPF_Client.MQTT
         }
 
         public int Voltage { get; set; }
-        public string ReceivedDtHumanized => ReceivedDt.Humanize(false);
+        public bool Offline { get; set; }
 
      /// <summary>
         /// The location is inferred from the rawPath. It is the all the data before the last leaf home/floor1/cabinet/temperature. The part before temperature is the location.
@@ -52,40 +53,32 @@ namespace MQTT_WPF_Client.MQTT
         
         public MqttDataFormat(string rawPath, string rawData)
         {
+            Offline = false;
             ParsableMessage = true;
             GetDataFromMessage(rawData);
             GetDataFromPath(rawPath);
             ReceivedDt=DateTime.Now;
         }
 
-     public int GetSeqFromMessage(string rawData)
-     {
-         try
-         {
-                int i1 = rawData.IndexOf("id:", StringComparison.Ordinal) + 3;
-               // int i2 = rawData.IndexOf(" ", i1);
-                int res = Convert.ToInt32(rawData.Substring(i1));
-                return res;
-            }
-         catch (Exception)
-         {
-             Console.WriteLine("Exception while reading sequence ID from raw data:{0}",rawData);
-             return -1;
-         }
-     }
 
         public void  GetDataFromMessage(string rawData)
         {
             try
             {
+                if (rawData=="offline")
+                {
+                    ParsableMessage = true;
+                    Offline = true;
+                    Debug.WriteLine("Received Offline");
+                    return;
+                }
                 string[] data=rawData.Split(' ');
                 //Value = Convert.ToDecimal(data[0]);
                 //SeqId = Convert.ToInt32(data[1].Substring(3));
                 //SensorId = data[2].Substring(4);
                 Dictionary<string, string> dict = new Dictionary<string, string>();
-                foreach (var s in data)
+                foreach (string[] pair in data.Select(s => s.Split(':')))
                 {
-                    string[] pair = s.Split(':');
                     if (pair.Length > 1)
                     {
                         dict.Add(pair[0], pair[1]);
@@ -107,7 +100,7 @@ namespace MQTT_WPF_Client.MQTT
             }
             catch (Exception)
             {
-                Console.WriteLine("Exception while converting rawdata:{0}", rawData);
+                Debug.WriteLine($"Exception while converting rawdata:{rawData}");
                 Value = 0xffff;
                 SeqId = -1;
                 ParsableMessage = false;

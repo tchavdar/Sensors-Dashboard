@@ -9,7 +9,10 @@
              xmlns:design="clr-namespace:MQTT_WPF_Client.Design"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300" 
-             d:DataContext="{d:DesignInstance design:DesignTimeASensor, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance design:DesignTimeASensor, IsDesignTimeCreatable=True}"
+             ToolTipOpening="Dht22SensorControl_OnToolTipOpening"
+             ToolTip="{Binding  Path=LastUpdatedHumanized, RelativeSource={RelativeSource Self}}">
+
     <Grid>
 
         <Grid.RowDefinitions>
@@ -18,29 +21,73 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label HorizontalAlignment="Center"
+
+               Grid.Row="0" IsHitTestVisible="True"
+               >
+            <Label.Content>
+                <Grid>
+                    <TextBlock
+                        Text="{Binding Path=PublicName}" 
+                        x:Name="PublicName"/>
+
+                    <Canvas Grid.Row="0" HorizontalAlignment="Right">
+                        <Ellipse x:Name="ActivityLight" 
+                                 Width="4" 
+                                 Height="4" 
+                                 Fill="Red"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Bottom"  />
+                    </Canvas>
+                </Grid>
+                
+                
+            </Label.Content>
+        </Label>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+
+            </Grid.ColumnDefinitions>
             
-               Content="{Binding PublicName}"
-               Grid.Row="0" IsHitTestVisible="True"  />
-        <Canvas Grid.Row="0">
-            <Ellipse Width="4" Height="4" Fill="Red">
-            </Ellipse>
-        </Canvas>
+            <Label
+                Grid.Column="0"
+                Content="{Binding Sensors[temperature].LastValue}"
+                FontSize="23"
+                Margin="-1,0,-4,0">
+
+            </Label>
+            <Label
+                Grid.Column="1"
+                Content="{Binding Sensors[temperature].Unit}"
+                FontSize="10"
+                FontStretch="Condensed" 
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="-5,5,0,0"
+                >
+            </Label>
+        </Grid>
+        
 
         <dopaScript:CircularProgressBar
-            
+            x:Name="CircularProgressBar2"
             Grid.Row="1"
             HorizontalContentAlignment="Stretch"
             VerticalAlignment="Center"
             Width="100"
             Height="100"
-            ShowValue="True"
+            ShowValue="false"
             BackgroundStroke="LightBlue"
             Stroke="DeepSkyBlue"
-            StrokeThickness="25"
+            StrokeThickness="20"
             HorizontalAlignment="Center"
-            Value="{Binding Sensors[humidity].LastValue}" />
+            Value="{Binding Sensors[humidity].LastValue, Converter={StaticResource ValueConverter}}" />
 
         <dopaScript:CircularProgressBar
+            x:Name="triggerElem"
             Grid.Row="1"
             HorizontalContentAlignment="Stretch"
             VerticalAlignment="Center"
@@ -51,7 +98,7 @@
             Stroke="Blue"
             StrokeThickness="2"
             HorizontalAlignment="Center"
-            Value="{Binding Sensors[humidity].LastValue}">
+            Value="{Binding Sensors[humidity].LastUpdated.Ticks}">
             <dopaScript:CircularProgressBar.Triggers>
                 <EventTrigger RoutedEvent="dopaScript:CircularProgressBar.ValueChanged">
                     <EventTrigger.Actions>
@@ -61,23 +108,59 @@
                                                  To="100"
                                                  Duration="{Binding Sensors[humidity].Duration}"
                                                  AutoReverse="False">
-
                                 </DoubleAnimation>
+                                
+                            </Storyboard>
+                        </BeginStoryboard>
+                        <BeginStoryboard>
+                            <Storyboard  >
+                                <DoubleAnimation 
+                                    Storyboard.Target="{Binding Source={x:Reference ActivityLight}}"
+                                    Storyboard.TargetProperty="Opacity"
+                                    From="0"
+                                                 To="1"
+                                                 Duration="0:0:1"
+                                                 AutoReverse="true">
+                                </DoubleAnimation>
+
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger.Actions>
                 </EventTrigger>
             </dopaScript:CircularProgressBar.Triggers>
         </dopaScript:CircularProgressBar>
+        <Label Content="OFFLINE" 
+               Grid.Row="2" 
+               VerticalAlignment="Top"
+               Margin="0,-5,0,0"
+               Visibility="{Binding Path=Sensors[humidity].Offline, Converter={StaticResource BoolToVis}}" />
+        
+        <Grid Grid.Row="2" HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Margin="0,-5,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
 
-        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            </Grid.ColumnDefinitions>
+
             <Label
-                Content="{Binding Sensors[temperature].LastValue}">
+                Grid.Column="0"
+                Content="{Binding Sensors[humidity].LastValue}"
+                FontSize="12"
+                Margin="-5,0,-4,0">
+
             </Label>
             <Label
-                Content="{Binding Sensors[temperature].Unit}">
+                Grid.Column="1"
+                Content="{Binding Sensors[humidity].Unit}"
+                FontSize="8"
+                FontStretch="Condensed" 
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="-5,0,0,0"
+                >
             </Label>
-
-        </StackPanel>
-    </Grid>
+        </Grid>
+       </Grid>
 </UserControl>
