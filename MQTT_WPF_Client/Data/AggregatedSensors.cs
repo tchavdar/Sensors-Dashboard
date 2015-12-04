@@ -13,168 +13,12 @@ using MQTT_WPF_Client.MQTT;
 namespace MQTT_WPF_Client.Data
 {
 
-    public class SensorData
-    {
-        public DateTime ReceivedDt { get; set; }
-        public string Value { get; set; }
-        public int Id { get; set; }
-
-        public int Voltage { get; set; }
-
-        
-        public SensorData(DateTime receivedDt, string value, int voltage)
-        {
-            ReceivedDt = receivedDt;
-            Value = value;
-            Voltage = voltage;
-        }
-
-    }
-
-
-    public class Sensor:INotifyPropertyChanged
-    {
-        private int _maxElements;
-        public int Id { get; set; }
-        private string _lastValue;
-        private DateTime _lastUpdated;
-        private TimeSpan _updatePeriod;
-        public string ReceivedDtHumanized
-        {
-            get
-            {
-                return LastUpdated.Humanize(false);
-            }
-        }
-
-
-        public string Type { get; set; }
-        
-        public ObservableCollection<SensorData> SensorDatas { get; set; }
-     
-        public string LastValue
-        {
-            get { return _lastValue; }
-            set
-            {
-                _lastValue = value;
-                OnPropertyChanged(nameof(LastValue));
-            }
-        }
-
-        public string Unit { get; set; }
-
-
-        public DateTime LastUpdated
-        {
-            get { return _lastUpdated; }
-            set
-            {
-                _lastUpdated = value;
-                OnPropertyChanged(nameof(LastUpdated));
-                OnPropertyChanged(ReceivedDtHumanized);
-            }
-        }
 
 
 
-        public TimeSpan UpdatePeriod
-        {
-            get { return _updatePeriod; }
-            set
-            {
-                _updatePeriod = value;
-                OnPropertyChanged(nameof(UpdatePeriod));
-                OnPropertyChanged(nameof(Duration));
-            }
-        }
-
-        public string Duration => UpdatePeriod.ToAnimatedDuration();
-
-        private bool _offline;
-        public bool Offline
-        {
-            get { return _offline; }
-            set
-            {
-                _offline = value;
-                OnPropertyChanged(nameof(Offline));
-            }
-        }
-
-        public Sensor(string sensorType, string sensorUnit)
-        {
-            Type = sensorType;
-            Unit = sensorUnit;
-            LastValue = "N/A";
-            LastUpdated=DateTime.Now;
-            Offline = false;
  
-            SensorDatas = new ObservableCollection<SensorData>();
-            _maxElements = 100;
-            UpdatePeriod = TimeSpan.FromSeconds(10);
 
-        }
-
-        public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
-        {
-            //the offline info arrives at Location as for now for a location we may have several sensors
-            //we put them all offline no matter the type
-            if (e.newData.Offline)
-            {
-                ReceivedOffline(e.newData);
-                return;
-            }
-
-            if (e.newData.SensorType == Type)
-            {
-                    NewDataReceived(e.newData);
-                    Update(e.newData);
-            }
-        }
-
-        private void ReceivedOffline(MqttDataFormat newData)
-        {
-            Offline = true;
-        }
-
-        private void Update(MqttDataFormat newData)
-        {
-            
-            UpdatePeriod = (DateTime.Now - LastUpdated);
-            Offline = false;
-            LastUpdated = newData.ReceivedDt;
-            LastValue = newData.Value.ToString(CultureInfo.InvariantCulture);
-            Debug.WriteLine($"Period:{UpdatePeriod.ToAnimatedDuration()}");
-
-        }
-
-        private void NewDataReceived(MqttDataFormat newData)
-        {
-
-            if ((SensorDatas.Count>0)&&((DateTime.Now-SensorDatas[0].ReceivedDt).Hours > 1))
-            {
-                SensorDatas.RemoveAt(0);
-            }
-            SensorDatas.Add(new SensorData(newData.ReceivedDt, newData.Value.ToString(CultureInfo.InvariantCulture),newData.Voltage));
-           // OnPropertyChanged(nameof(SensorDatas));
-
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        
-
-    }
-
-    public class AggregatedSensors
+    public class AggregatedSensors:INotifyPropertyChanged
     {
         public int Id { get; set; }
         public string Location { get; set; }
@@ -183,6 +27,7 @@ namespace MQTT_WPF_Client.Data
 
         public SortedList<String,Sensor> Sensors { get; set; }
 
+        public Sensor Temperature { get; set; }
 
         public AggregatedSensors(string location, string publicName)
         {
@@ -191,21 +36,52 @@ namespace MQTT_WPF_Client.Data
             PublicName = publicName;
         }
         
+        
 
         public void MqttReceivedData(object sender, MQQTDataReceivedEventArgs e)
         {
-            if (e.newData.Location.Contains(Location))
+            if ((NewReading != null) && (e.newData.Location == Location))
             {
+                NewReading(this,
+                    new Reading
+                    {
+                        Location = e.newData.Location,
+                        PublicName = this.PublicName,
+                        SensorType = e.newData.SensorType,
+                        Value = e.newData.Value
+                    });
+
                 foreach (var sensor in Sensors.Values)
                 {
-                    sensor.MqttReceivedData(sender,e);
+                    if (e.newData.SensorType == sensor.Type)
+                    {
+                        sensor.MqttReceivedData(sender, e);
+                    }
                 }
             }
+
+
         }
 
         public void AddSensor(string sensorType, string sensorUnit)
         {
-            Sensors.Add(sensorType,new Sensor(sensorType,sensorUnit));
+            Sensor sensor = new Sensor(sensorType, sensorUnit, this);
+
+            Sensors.Add(sensorType,sensor);
+            if (sensorType=="temperature")
+            {
+                Temperature = sensor;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public event OnNewReading NewReading;
+
+
+        protected virtual void OnNewReading(Reading args)
+        {
+            NewReading?.Invoke(this, args);
         }
     }
 }

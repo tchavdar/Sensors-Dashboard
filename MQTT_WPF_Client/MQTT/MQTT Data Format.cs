@@ -16,7 +16,7 @@ namespace MQTT_WPF_Client.MQTT
         /// <summary>
         /// LastValue as parsed data from the raw data.
         ///  </summary>
-        public decimal Value { get; set; }
+        public double Value { get; set; }
 
 
         /// <summary>
@@ -45,10 +45,15 @@ namespace MQTT_WPF_Client.MQTT
         public int Voltage { get; set; }
         public bool Offline { get; set; }
 
-     /// <summary>
-        /// The location is inferred from the rawPath. It is the all the data before the last leaf home/floor1/cabinet/temperature. The part before temperature is the location.
+        /// <summary>
+        /// The Full location is inferred from the rawPath. It is the all the data before the last leaf home/floor1/cabinet/temperature. The whole part before temperature is the Full location.
         /// </summary>
-     public string Location { get; private set; }
+        public string FullLocation { get; private set; }
+
+        /// <summary>
+        /// The location is inferred from the rawPath. It is the all the data before the last leaf home/floor1/cabinet/temperature. The leaf before temperature is the location.
+        /// </summary>
+        public string Location { get; private set; }
 
         
         public MqttDataFormat(string rawPath, string rawData)
@@ -88,7 +93,7 @@ namespace MQTT_WPF_Client.MQTT
                         dict.Add("v",pair[0]);
                     }
                 }
-                Value = Convert.ToDecimal(dict["v"]);
+                Value = Convert.ToDouble(dict["v"]);
                 SeqId = Convert.ToInt32(dict["id"]);
                 SensorId = dict["SID"];
                 if (dict.ContainsKey("SV"))
@@ -113,13 +118,15 @@ namespace MQTT_WPF_Client.MQTT
          {
              string[] data = rawPath.Split('/');
              SensorType = data[data.Length - 1];
-             Location = rawPath.Substring(0, rawPath.Length - SensorType.Length-1);
+             FullLocation = rawPath.Substring(0, rawPath.Length - SensorType.Length-1);
+             Location = data[data.Length - 2];
 
          }
          catch (Exception)
          {
              Console.WriteLine("Exception while parsing rawPath. Format is expected to be root/leaf/leaf/sensor_type. Received:{0}", rawPath);
              SensorType = "UNKNOWN";
+             FullLocation = "UNKNOWN";
              Location = "UNKNOWN";
              ParsableMessage = false;
          }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
 using MQTT_WPF_Client.Data;
@@ -90,11 +92,23 @@ namespace MQTT_WPF_Client.ViewModel
         public MqttDataLayer MqttDl { get; set; }
 
 
-        public List<AggregatedSensors> sensorsList; 
+
+
+        public ObservableCollection<AggregatedSensors> SensorsList { get; set; }
+
+
+        public MeasuredData MeasuredData { get; set; }
+        
+        
+
+
+
         public OverviewViewModel(MainWindow mainWindow)
         {
+
+
             MqttReceivedData = new MQTTCollection(this);
-            sensorsList = new List<AggregatedSensors>();
+            SensorsList = new ObservableCollection<AggregatedSensors>();
 
             ChartIntervalType = DateTimeIntervalType.Auto;
 
@@ -107,25 +121,29 @@ namespace MQTT_WPF_Client.ViewModel
             As1.AddSensor("temperature", "C");
             As1.AddSensor("humidity", "%");
 
-            sensorsList.Add(As1);
+            SensorsList.Add(As1);
+
+            MeasuredData=new MeasuredData();
+            
+
 
             As2 = new AggregatedSensors("cave", "Cave");
             As2.AddSensor("temperature", "C");
             As2.AddSensor("humidity", "%");
 
-            sensorsList.Add(As2);
+            SensorsList.Add(As2);
 
             As3 = new AggregatedSensors("outside", "Outside");
             As3.AddSensor("temperature", "C");
             As3.AddSensor("humidity", "%");
-
-            sensorsList.Add(As3);
+            SensorsList.Add(As3);
 
             As4 = new AggregatedSensors("sleeping_room", "Sleeping room");
             As4.AddSensor("temperature", "C");
             As4.AddSensor("humidity", "%");
 
-            sensorsList.Add(As4);
+
+            SensorsList.Add(As4);
             //note that the sensors listen to the collection events not the data layer events
             //the collection takes care to parse the received data so that the agregated sensors can use it directly
             MqttReceivedData.DataReceived += As1.MqttReceivedData;
@@ -133,8 +151,15 @@ namespace MQTT_WPF_Client.ViewModel
             MqttReceivedData.DataReceived += As3.MqttReceivedData;
             MqttReceivedData.DataReceived += As4.MqttReceivedData;
 
+
+
+            As1.NewReading += MeasuredData.NewReading;
+            As2.NewReading += MeasuredData.NewReading;
+            As3.NewReading += MeasuredData.NewReading;
+            As4.NewReading += MeasuredData.NewReading;
+
             Dht22SensorControl dht22;
-            foreach (var aggregatedSensor in sensorsList)
+            foreach (var aggregatedSensor in SensorsList)
             {
                 dht22 = new Dht22SensorControl();
                 dht22.DataContext = aggregatedSensor;
@@ -150,8 +175,6 @@ namespace MQTT_WPF_Client.ViewModel
                     mainWindow.SensorsContainerPanel.Children.Add(dht22);
 
             }
-
-
 
 
 
@@ -197,5 +220,6 @@ namespace MQTT_WPF_Client.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
 
 }

@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
             <BooleanToVisibilityConverter x:Key="BoolToVis"/>
             <extensions:SensorValueToDoubleConverter x:Key="ValueConverter" />
+            <extensions:DebugConverter x:Key="DebugConverter" />
         </ResourceDictionary>
         
     </Application.Resources>
